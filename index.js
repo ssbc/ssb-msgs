@@ -2,7 +2,7 @@ function isObject (o) { return o && 'object' === typeof o }
 
 function traverse (obj, each) {
   if(Buffer.isBuffer(obj) || !isObject(obj)) return
-  if(!isArray(obj)) each(obj)
+  if(!Array.isArray(obj)) each(obj)
   for(var k in obj) {
     if(isObject(obj[k])) traverse(obj[k], each)
   }
