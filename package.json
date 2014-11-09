@@ -1,0 +1,16 @@
+{
+  "name": "ssb-msgs",
+  "description": "message-processing tools for secure-scuttlebutt",
+  "version": "0.1.0",
+  "homepage": "https://github.com/pfraze/ssb-msgs",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pfraze/ssb-msgs.git"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "author": "Paul Frazee <pfrazee@gmail.com>",
+  "license": "MIT"
+}
