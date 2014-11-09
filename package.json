@@ -1,7 +1,7 @@
 {
   "name": "ssb-msgs",
   "description": "message-processing tools for secure-scuttlebutt",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/pfraze/ssb-msgs",
   "repository": {
     "type": "git",
