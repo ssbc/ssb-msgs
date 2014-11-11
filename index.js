@@ -13,3 +13,14 @@ exports.indexLinks = function (msg, each) {
     if(obj.$rel && (obj.$msg || obj.$ext || obj.$feed)) each(obj)
   })
 }
+
+exports.getLinks = function(msg, rel) {
+  var links = []
+  exports.indexLinks(msg, function(link) {
+    if (!rel)
+      links.push(link)
+    else if (link.$rel == rel)
+      links.push(link)
+  })
+  return links
+}
