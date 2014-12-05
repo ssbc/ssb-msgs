@@ -10,7 +10,7 @@ function traverse (obj, each) {
 
 exports.indexLinks = function (msg, each) {
   traverse(msg, function (obj) {
-    if(obj.$rel && (obj.$msg || obj.$ext || obj.$feed)) each(obj)
+    if(obj.rel && (obj.msg || obj.ext || obj.feed)) each(obj)
   })
 }
 
@@ -19,7 +19,7 @@ exports.getLinks = function(msg, rel) {
   exports.indexLinks(msg, function(link) {
     if (!rel)
       links.push(link)
-    else if (link.$rel == rel)
+    else if (link.rel == rel)
       links.push(link)
   })
   return links
