@@ -24,7 +24,6 @@ exports.indexLinks = function (msg, opts, each) {
     if (_tomsg  && !obj.msg) return
     if (_tofeed && !obj.feed) return
     if (_toext  && !obj.ext) return
-    if (!(obj.msg || obj.ext || obj.feed)) return
     each(obj)
   })
 }
