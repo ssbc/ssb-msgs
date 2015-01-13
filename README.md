@@ -9,7 +9,7 @@ var mlib = require('ssb-msgs')
 ### indexLinks
 
 ```
-indexLinks(msg: Object, [opts: Options], each: Function(link: Object))`
+indexLinks(msg: Object, [opts: Options], each: Function(link: Object))
 where Options = { rel: String, tomsg: Bool, tofeed: Bool, toext: Bool }
 ```
 
