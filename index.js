@@ -8,19 +8,31 @@ function traverse (obj, each) {
   }
 }
 
-exports.indexLinks = function (msg, each) {
+exports.indexLinks = function (msg, opts, each) {
+  if (typeof opts == 'function') {
+    each = opts
+    opts = null
+  }
+  if (typeof opts == 'string')
+    opts = { rel: opts }
+  var _rel    = (opts && opts.rel)
+  var _tomsg  = (opts && opts.tomsg)
+  var _tofeed = (opts && opts.tofeed)
+  var _toext  = (opts && opts.toext)
   traverse(msg, function (obj) {
-    if(obj.rel && (obj.msg || obj.ext || obj.feed)) each(obj)
+    if (!obj.rel || (_rel && obj.rel !== _rel)) return
+    if (_tomsg  && !obj.msg) return
+    if (_tofeed && !obj.feed) return
+    if (_toext  && !obj.ext) return
+    if (!(obj.msg || obj.ext || obj.feed)) return
+    each(obj)
   })
 }
 
-exports.getLinks = function(msg, rel) {
+exports.getLinks = function(msg, opts) {
   var links = []
-  exports.indexLinks(msg, function(link) {
-    if (!rel)
-      links.push(link)
-    else if (link.rel == rel)
-      links.push(link)
+  exports.indexLinks(msg, opts, function (link) {
+    links.push(link)
   })
   return links
 }
