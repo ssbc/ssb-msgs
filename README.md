@@ -8,7 +8,10 @@ var mlib = require('ssb-msgs')
 
 ### indexLinks
 
-`indexLinks(msg: Object, [opts: { rel: String, tomsg: Bool, tofeed: Bool, toext: Bool },] each: Function(link: Object))`
+```
+indexLinks(msg: Object, [opts: Options], each: Function(link: Object))`
+where Options = { rel: String, tomsg: Bool, tofeed: Bool, toext: Bool }
+```
 
 Traverses an message and runs the `each` function on all found links. All `opts` fields are optional. `Opts` may also be a string, in which case it is the rel attribute
 
@@ -44,7 +47,7 @@ mlib.indexLinks(msg, { tofeed: true }, function(link) {
 
 ### getLinks
 
-`getLinks(msg: Object, [opts: { rel: String, tomsg: Bool, tofeed: Bool, toext: Bool }])`
+`getLinks(msg: Object, [opts: Options])`
 
 Traverses a message and returns all found links. `Opts` works as in the `indexLinks` function
 
