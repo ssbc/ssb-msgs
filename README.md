@@ -6,7 +6,9 @@ Message-processing tools for secure-scuttlebutt
 var mlib = require('ssb-msgs')
 ```
 
-### indexLinks(msg: Object, [opts: { rel: String, tomsg: Bool, tofeed: Bool, toext: Bool },] each: Function(link: Object))
+### indexLinks
+
+`indexLinks(msg: Object, [opts: { rel: String, tomsg: Bool, tofeed: Bool, toext: Bool },] each: Function(link: Object))`
 
 Traverses an message and runs the `each` function on all found links. All `opts` fields are optional. `Opts` may also be a string, in which case it is the rel attribute
 
@@ -40,7 +42,9 @@ mlib.indexLinks(msg, { tofeed: true }, function(link) {
 // 'baz-link' 'id...'
 ```
 
-### getLinks(msg: Object, [opts: { rel: String, tomsg: Bool, tofeed: Bool, toext: Bool }])
+### getLinks
+
+`getLinks(msg: Object, [opts: { rel: String, tomsg: Bool, tofeed: Bool, toext: Bool }])`
 
 Traverses a message and returns all found links. `Opts` works as in the `indexLinks` function
 
@@ -62,5 +66,5 @@ console.log(mlib.getLinks(msg, 'foo-link'))
 // [ {rel: 'foo-link', msg: 'id...'}]
 console.log(mlib.getLinks(msg, { tofeed: true }))
 // output:
-// [ {rel: 'baz-link', msg: 'id...'}]
+// [ {rel: 'baz-link', feed: 'id...'}]
 ```
