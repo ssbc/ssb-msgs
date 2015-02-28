@@ -1,10 +1,22 @@
 function isObject (o) { return o && 'object' === typeof o }
+function isBool (o) { return 'boolean' === typeof o }
+function isString (s) { return 'string' === typeof s }
+
+function isHash (data) {
+  return isString(data) && /^[A-Za-z0-9\/+]{43}=\.blake2s$/.test(data)
+}
+exports.isHash = isHash
 
 function traverse (obj, each) {
-  if(Buffer.isBuffer(obj) || !isObject(obj)) return
-  if(!Array.isArray(obj)) each(obj)
-  for(var k in obj) {
-    if(isObject(obj[k])) traverse(obj[k], each)
+  for (var k in obj) {
+    if (!isObject(obj[k]))
+      continue
+    if (Array.isArray(obj[k])) {
+      obj[k].forEach(function (v) {
+        each(v, k)
+      })
+    } else
+      each(obj[k], k)
   }
 }
 
@@ -15,23 +27,42 @@ exports.indexLinks = function (msg, opts, each) {
   }
   if (typeof opts == 'string')
     opts = { rel: opts }
-  var _rel    = (opts && opts.rel)
-  var _tomsg  = (opts && opts.tomsg)
-  var _tofeed = (opts && opts.tofeed)
-  var _toext  = (opts && opts.toext)
-  traverse(msg, function (obj) {
-    if (!obj.rel || (_rel && obj.rel !== _rel)) return
-    if (_tomsg  && !obj.msg) return
-    if (_tofeed && !obj.feed) return
-    if (_toext  && !obj.ext) return
-    each(obj)
+  if (!opts)
+    opts = {}
+  var _msg  = opts.msg || opts.tomsg
+  var _feed = opts.feed || opts.tofeed
+  var _ext  = opts.ext || opts.toext
+  var _any  = !(_msg || _feed || _ext)
+  traverse(msg, function (obj, rel) {
+    if (opts.rel && rel !== opts.rel) return
+
+    if (_any) {
+      if (!obj.msg && !obj.feed && !obj.ext) return
+    }
+    else {
+      if (_msg) {
+        if (isBool(_msg) && !obj.msg) return 
+        if (!isBool(_msg) && obj.msg != _msg) return
+      }
+
+      if (_feed) {
+        if (isBool(_feed) && !obj.feed) return 
+        if (!isBool(_feed) && obj.feed != _feed) return
+      }
+
+      if (_ext) {
+        if (isBool(_ext) && !obj.ext) return 
+        if (!isBool(_ext) && obj.ext != _ext) return
+      }
+    }
+
+    each(obj, rel)
   })
 }
 
-exports.getLinks = function(msg, opts) {
-  var links = []
-  exports.indexLinks(msg, opts, function (link) {
-    links.push(link)
-  })
-  return links
+exports.asLinks = function (obj) {
+  if (!obj || !isObject(obj))
+    return []
+  var arr = Array.isArray(obj) ? obj : [obj]
+  return arr.filter(function (obj) { return (!!obj.msg || !!obj.feed || !!obj.ext) })
 }
