@@ -39,7 +39,7 @@ mlib.indexLinks(msg, { feed: 'feedid' }, print)
 ### asLinks
 
 ```
-asLinks(obj: Any)
+asLinks(obj: Any, [requiredAttr: String])
 ```
 
 Helper to get links from a message in a regular array form.
@@ -51,6 +51,8 @@ var msg = {
 }
 mlib.asLinks(msg.foo) // => [{ msg: 'msgid' }]
 mlib.asLinks(msg.bar) // => [{ feed: 'feedid' }]
+mlib.asLinks(msg.bar, 'feed') // => [{ feed: 'feedid' }]
+mlib.asLinks(msg.bar, 'msg') // => []
 mlib.asLinks(msg.baz) // => []
 ```
 

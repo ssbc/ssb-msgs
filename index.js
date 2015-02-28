@@ -60,9 +60,13 @@ exports.indexLinks = function (msg, opts, each) {
   })
 }
 
-exports.asLinks = function (obj) {
+exports.asLinks = function (obj, requiredAttr) {
   if (!obj || !isObject(obj))
     return []
   var arr = Array.isArray(obj) ? obj : [obj]
-  return arr.filter(function (obj) { return (!!obj.msg || !!obj.feed || !!obj.ext) })
+  return arr.filter(function (obj) {
+    if (requiredAttr)
+      return !!obj[requiredAttr]
+    return (!!obj.msg || !!obj.feed || !!obj.ext)
+  })
 }
