@@ -56,7 +56,7 @@ exports.indexLinks = function (msg, opts, each) {
       }
     }
 
-    each(obj, rel)
+    each(obj, rel.toLowerCase())
   })
 }
 
