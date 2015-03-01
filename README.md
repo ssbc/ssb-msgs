@@ -9,65 +9,66 @@ var mlib = require('ssb-msgs')
 ### indexLinks
 
 ```
-indexLinks(msg: Object, [opts: Options], each: Function(link: Object))
-where Options = { rel: String, tomsg: Bool, tofeed: Bool, toext: Bool }
+indexLinks(msg: Object, [opts: Options], each: Function(link: Object, rel: String))
+where Options = { rel: String, msg: Bool/String, feed: Bool/String, ext: Bool/String }
 ```
 
-Traverses an message and runs the `each` function on all found links. All `opts` fields are optional. `Opts` may also be a string, in which case it is the rel attribute
+Traverses a message and runs the `each` function on all found links. All `opts` fields are optional. `Opts` may also be a string, in which case it is the rel attribute
 
 ```js
 var msg = {
-  foo: { rel: 'foo-link', msg: 'id...' },
-  bar: {
-    baz: { rel: 'baz-link', feed: 'id...' }
-  }
+  foo: { msg: 'msgid' },
+  bar: [{ feed: 'feedid' }]
 }
-mlib.indexLinks(msg, function(link) {
-  console.log(link.rel, link.msg || link.feed || link.ext)
-})
-// output:
-// 'foo-link' 'id...'
-// 'baz-link' 'id...'
-mlib.indexLinks(msg, { rel: 'foo-link' }, function(link) {
-  console.log(link.rel, link.msg || link.feed || link.ext)
-})
-// output:
-// 'foo-link' 'id...'
-mlib.indexLinks(msg, 'foo-link', function(link) {
-  console.log(link.rel, link.msg || link.feed || link.ext)
-})
-// output:
-// 'foo-link' 'id...'
-mlib.indexLinks(msg, { tofeed: true }, function(link) {
-  console.log(link.rel, link.feed)
-})
-// output:
-// 'baz-link' 'id...'
+function print (link, rel) {
+  console.log(rel, link.msg || link.feed || link.ext)  
+}
+mlib.indexLinks(msg, print)
+// => foo msgid
+// => bar feedid
+mlib.indexLinks(msg, 'foo', print)
+// => foo msgid
+mlib.indexLinks(msg, { rel: 'foo' }, print)
+// => foo msgid
+mlib.indexLinks(msg, { feed: true }, print)
+// => bar feedid
+mlib.indexLinks(msg, { feed: 'feedid' }, print)
+// => bar feedid
 ```
 
-### getLinks
+### asLinks
 
-`getLinks(msg: Object, [opts: Options])`
+```
+asLinks(obj: Any, [requiredAttr: String])
+```
 
-Traverses a message and returns all found links. `Opts` works as in the `indexLinks` function
+Helper to get links from a message in a regular array form.
 
 ```js
 var msg = {
-  foo: { rel: 'foo-link', msg: 'id...' },
-  bar: {
-    baz: { rel: 'baz-link', feed: 'id...' }
-  }
+  foo: { msg: 'msgid' },
+  bar: [{ feed: 'feedid' }]
 }
-console.log(mlib.getLinks(msg))
-// output:
-// [ {rel: 'foo-link', msg: 'id...'}, {rel: 'baz-link', feed: 'id...'}]
-console.log(mlib.getLinks(msg, { rel: 'foo-link' }))
-// output:
-// [ {rel: 'foo-link', msg: 'id...'}]
-console.log(mlib.getLinks(msg, 'foo-link'))
-// output:
-// [ {rel: 'foo-link', msg: 'id...'}]
-console.log(mlib.getLinks(msg, { tofeed: true }))
-// output:
-// [ {rel: 'baz-link', feed: 'id...'}]
+mlib.asLinks(msg.foo) // => [{ msg: 'msgid' }]
+mlib.asLinks(msg.bar) // => [{ feed: 'feedid' }]
+mlib.asLinks(msg.bar, 'feed') // => [{ feed: 'feedid' }]
+mlib.asLinks(msg.bar, 'msg') // => []
+mlib.asLinks(msg.baz) // => []
 ```
+
+### isHash
+
+```
+isHash(v: Any)
+```
+
+Is the given value a base64-encoded blake2s hash?
+
+```js
+mlib.isHash('y2L+rXVdNBLAR4Rc5/2UrIYnm8BS/4srQ60FPxYYqPo=.blake2s')
+// => true
+mlib.isHash('foo')
+// => false
+```
+
+```js
