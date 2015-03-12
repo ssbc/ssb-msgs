@@ -72,7 +72,7 @@ exports.asLinks = function (obj, requiredAttr) {
   if (!obj || !isObject(obj))
     return []
   var arr = Array.isArray(obj) ? obj : [obj]
-  return arr.filter(function (l) { return isLink(l, requiredAttr) )
+  return arr.filter(function (l) { return isLink(l, requiredAttr) })
 }
 
 var isLink =
