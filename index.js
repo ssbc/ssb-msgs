@@ -60,12 +60,14 @@ exports.indexLinks = function (msg, opts, each) {
   })
 }
 
+exports.link =
 exports.asLink = function (obj, requiredAttr) {
   if (!obj || !isObject(obj))
     return null
   return isLink(obj, requiredAttr) ? obj : null
 }
 
+exports.links =
 exports.asLinks = function (obj, requiredAttr) {
   if (!obj || !isObject(obj))
     return []
