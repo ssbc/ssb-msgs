@@ -60,13 +60,30 @@ exports.indexLinks = function (msg, opts, each) {
   })
 }
 
+exports.link =
+exports.asLink = function (obj, requiredAttr) {
+  if (!obj || !isObject(obj))
+    return null
+  return isLink(obj, requiredAttr) ? obj : null
+}
+
+exports.links =
 exports.asLinks = function (obj, requiredAttr) {
   if (!obj || !isObject(obj))
     return []
   var arr = Array.isArray(obj) ? obj : [obj]
-  return arr.filter(function (obj) {
-    if (requiredAttr)
-      return !!obj[requiredAttr]
-    return (!!obj.msg || !!obj.feed || !!obj.ext)
-  })
+  return arr.filter(function (l) { return isLink(l, requiredAttr) )
+}
+
+var isLink =
+exports.isLink = function (obj, requiredAttr) {
+  if (requiredAttr)
+    return isHash(obj[requiredAttr])
+  if (obj.msg)
+    return isHash(obj.msg)
+  if (obj.feed)
+    return isHash(obj.feed)
+  if (obj.ext)
+    return isHash(obj.ext)
+  return false
 }

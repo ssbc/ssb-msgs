@@ -36,10 +36,10 @@ mlib.indexLinks(msg, { feed: 'feedid' }, print)
 // => bar feedid
 ```
 
-### asLinks
+### links (or asLinks)
 
 ```
-asLinks(obj: Any, [requiredAttr: String])
+links(obj: Any, [requiredAttr: String])
 ```
 
 Helper to get links from a message in a regular array form.
@@ -49,11 +49,51 @@ var msg = {
   foo: { msg: 'msgid' },
   bar: [{ feed: 'feedid' }]
 }
-mlib.asLinks(msg.foo) // => [{ msg: 'msgid' }]
-mlib.asLinks(msg.bar) // => [{ feed: 'feedid' }]
-mlib.asLinks(msg.bar, 'feed') // => [{ feed: 'feedid' }]
-mlib.asLinks(msg.bar, 'msg') // => []
-mlib.asLinks(msg.baz) // => []
+mlib.links(msg.foo) // => [{ msg: 'msgid' }]
+mlib.links(msg.bar) // => [{ feed: 'feedid' }]
+mlib.links(msg.bar, 'feed') // => [{ feed: 'feedid' }]
+mlib.links(msg.bar, 'msg') // => []
+mlib.links(msg.baz) // => []
+```
+
+### link (or asLink)
+
+```
+link(obj: Any, [requiredAttr: String])
+```
+
+Helper to get a link from a message in a regular object form. If an array is found, will use the first element.
+
+```js
+var msg = {
+  foo: { msg: 'msgid' },
+  bar: [{ feed: 'feedid' }]
+}
+mlib.link(msg.foo) // => { msg: 'msgid' }
+mlib.link(msg.bar) // => { feed: 'feedid' }
+mlib.link(msg.bar, 'feed') // => { feed: 'feedid' }
+mlib.link(msg.bar, 'msg') // => null
+mlib.link(msg.baz) // => null
+```
+
+### isLink
+
+```
+isLink(obj: Any, [requiredAttr: String])
+```
+
+Predicate to test whether an object is a well-formed link. Returns false if given an array.
+
+```js
+var msg = {
+  foo: { msg: 'msgid' },
+  bar: [{ feed: 'feedid' }]
+}
+mlib.isLink(msg.foo) // => true
+mlib.isLink(msg.bar) // => true
+mlib.isLink(msg.bar, 'feed') // => true
+mlib.isLink(msg.bar, 'msg') // => false
+mlib.isLink(msg.baz) // => false
 ```
 
 ### isHash
