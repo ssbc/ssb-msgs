@@ -1,12 +1,12 @@
+var isRef = require('ssb-ref')
+
 function isObject (o) { return o && 'object' === typeof o }
 function isBool (o) { return 'boolean' === typeof o }
 function isString (s) { return 'string' === typeof s }
 
 //relax this to allow different algorithms.
-function isHash (data) {
-  return isString(data) && /^[A-Za-z0-9\/+]{43}=\.[\w\d]+$/.test(data)
-}
-
+var isHash = isRef.isHash
+var isFeedId = isRef.isFeedId
 exports.isHash = isHash
 
 function traverse (obj, each) {
@@ -80,11 +80,11 @@ exports.asLinks = function (obj, requiredAttr) {
 var isLink =
 exports.isLink = function (obj, requiredAttr) {
   if (requiredAttr)
-    return isHash(obj[requiredAttr])
+    return isRef(obj[requiredAttr])
   if (obj.msg)
     return isHash(obj.msg)
   if (obj.feed)
-    return isHash(obj.feed)
+    return isFeedId(obj.feed)
   if (obj.ext)
     return isHash(obj.ext)
   return false
