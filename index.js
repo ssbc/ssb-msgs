@@ -2,9 +2,11 @@ function isObject (o) { return o && 'object' === typeof o }
 function isBool (o) { return 'boolean' === typeof o }
 function isString (s) { return 'string' === typeof s }
 
+//relax this to allow different algorithms.
 function isHash (data) {
-  return isString(data) && /^[A-Za-z0-9\/+]{43}=\.blake2s$/.test(data)
+  return isString(data) && /^[A-Za-z0-9\/+]{43}=\.[\w\d]+$/.test(data)
 }
+
 exports.isHash = isHash
 
 function traverse (obj, each) {
