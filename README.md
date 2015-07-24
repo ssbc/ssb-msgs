@@ -16,24 +16,25 @@ where Options = { rel: String, msg: Bool/String, feed: Bool/String, ext: Bool/St
 Traverses a message and runs the `each` function on all found links. All `opts` fields are optional. `Opts` may also be a string, in which case it is the rel attribute
 
 ```js
+// assume %msgid and @feedid a well-formed
 var msg = {
-  foo: { msg: 'msgid' },
-  bar: [{ feed: 'feedid' }]
+  foo: { link: '%msgid' },
+  bar: [{ link: '@feedid' }]
 }
-function print (link, rel) {
-  console.log(rel, link.msg || link.feed || link.ext)  
+function print (obj, rel) {
+  console.log(rel, obj.link)  
 }
 mlib.indexLinks(msg, print)
-// => foo msgid
-// => bar feedid
+// => foo %msgid
+// => bar @feedid
 mlib.indexLinks(msg, 'foo', print)
-// => foo msgid
+// => foo %msgid
 mlib.indexLinks(msg, { rel: 'foo' }, print)
-// => foo msgid
+// => foo %msgid
 mlib.indexLinks(msg, { feed: true }, print)
-// => bar feedid
-mlib.indexLinks(msg, { feed: 'feedid' }, print)
-// => bar feedid
+// => bar @feedid
+mlib.indexLinks(msg, { feed: '@feedid' }, print)
+// => bar @feedid
 ```
 
 ### links (or asLinks)
@@ -46,12 +47,12 @@ Helper to get links from a message in a regular array form.
 
 ```js
 var msg = {
-  foo: { msg: 'msgid' },
-  bar: [{ feed: 'feedid' }]
+  foo: { link: '%msgid' },
+  bar: [{ link: '@feedid' }]
 }
-mlib.links(msg.foo) // => [{ msg: 'msgid' }]
-mlib.links(msg.bar) // => [{ feed: 'feedid' }]
-mlib.links(msg.bar, 'feed') // => [{ feed: 'feedid' }]
+mlib.links(msg.foo) // => [{ link: '%msgid' }]
+mlib.links(msg.bar) // => [{ link: '@feedid' }]
+mlib.links(msg.bar, 'feed') // => [{ link: '@feedid' }]
 mlib.links(msg.bar, 'msg') // => []
 mlib.links(msg.baz) // => []
 ```
@@ -66,12 +67,12 @@ Helper to get a link from a message in a regular object form. If an array is fou
 
 ```js
 var msg = {
-  foo: { msg: 'msgid' },
-  bar: [{ feed: 'feedid' }]
+  foo: { link: '%msgid' },
+  bar: [{ link: '@feedid' }]
 }
-mlib.link(msg.foo) // => { msg: 'msgid' }
-mlib.link(msg.bar) // => { feed: 'feedid' }
-mlib.link(msg.bar, 'feed') // => { feed: 'feedid' }
+mlib.link(msg.foo) // => { link: '%msgid' }
+mlib.link(msg.bar) // => { link: '@feedid' }
+mlib.link(msg.bar, 'feed') // => { link: '@feedid' }
 mlib.link(msg.bar, 'msg') // => null
 mlib.link(msg.baz) // => null
 ```
@@ -86,8 +87,8 @@ Predicate to test whether an object is a well-formed link. Returns false if give
 
 ```js
 var msg = {
-  foo: { msg: 'msgid' },
-  bar: [{ feed: 'feedid' }]
+  foo: { link: '%msgid' },
+  bar: [{ link: '@feedid' }]
 }
 mlib.isLink(msg.foo) // => true
 mlib.isLink(msg.bar) // => true
@@ -95,20 +96,3 @@ mlib.isLink(msg.bar, 'feed') // => true
 mlib.isLink(msg.bar, 'msg') // => false
 mlib.isLink(msg.baz) // => false
 ```
-
-### isHash
-
-```
-isHash(v: Any)
-```
-
-Is the given value a base64-encoded blake2s hash?
-
-```js
-mlib.isHash('y2L+rXVdNBLAR4Rc5/2UrIYnm8BS/4srQ60FPxYYqPo=.blake2s')
-// => true
-mlib.isHash('foo')
-// => false
-```
-
-```js
