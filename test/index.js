@@ -19,7 +19,12 @@ module.exports = function () {
       { link: feedid, foo: true },
       { link: msgid, foo: true },
       { link: blobid, foo: true }
-    ]
+    ],
+    i: {
+      // none of these will be indexed
+      j: feedid,
+      k: { link: feedid }
+    }
   }
 
   tape('link', function (t) {
