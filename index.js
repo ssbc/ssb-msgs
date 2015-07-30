@@ -1,17 +1,12 @@
-var isRef = require('ssb-ref')
+var ref = require('ssb-ref')
 
 function isObject (o) { return o && 'object' === typeof o }
 function isBool (o) { return 'boolean' === typeof o }
 function isString (s) { return 'string' === typeof s }
 
-//relax this to allow different algorithms.
-var isHash = isRef.isHash
-var isFeedId = isRef.isFeedId
-exports.isHash = isHash
-
 function traverse (obj, each) {
   for (var k in obj) {
-    if (!isObject(obj[k]))
+    if (!obj[k])
       continue
     if (Array.isArray(obj[k])) {
       obj[k].forEach(function (v) {
@@ -22,7 +17,7 @@ function traverse (obj, each) {
   }
 }
 
-exports.indexLinks = function (msg, opts, each) {
+exports.indexLinks = function (message, opts, each) {
   if (typeof opts == 'function') {
     each = opts
     opts = null
@@ -31,61 +26,61 @@ exports.indexLinks = function (msg, opts, each) {
     opts = { rel: opts }
   if (!opts)
     opts = {}
-  var _msg  = opts.msg || opts.tomsg
-  var _feed = opts.feed || opts.tofeed
-  var _ext  = opts.ext || opts.toext
-  var _any  = !(_msg || _feed || _ext)
-  traverse(msg, function (obj, rel) {
+  var msg  = opts.msg
+  var feed = opts.feed
+  var blob = opts.blob
+  var any  = !(msg || feed || blob)
+
+  traverse(message, function (obj, rel) {
     if (opts.rel && rel !== opts.rel) return
 
-    if (_any) {
-      if (!obj.msg && !obj.feed && !obj.ext) return
+    var r = (typeof obj == 'string') ? obj : obj.link
+    if (any) {
+      if (!ref.isLink(r)) return
+    } else {
+      if (msg) {
+        if (isBool(msg) && ref.type(r) != 'msg') return 
+        if (!isBool(msg) && r != msg) return
+      }
+
+      if (feed) {
+        if (isBool(feed) && ref.type(r) != 'feed') return 
+        if (!isBool(feed) && r != feed) return
+      }
+
+      if (blob) {
+        if (isBool(blob) && ref.type(r) != 'blob') return 
+        if (!isBool(blob) && r != blob) return
+      }
     }
-    else {
-      if (_msg) {
-        if (isBool(_msg) && !obj.msg) return 
-        if (!isBool(_msg) && obj.msg != _msg) return
-      }
 
-      if (_feed) {
-        if (isBool(_feed) && !obj.feed) return 
-        if (!isBool(_feed) && obj.feed != _feed) return
-      }
-
-      if (_ext) {
-        if (isBool(_ext) && !obj.ext) return 
-        if (!isBool(_ext) && obj.ext != _ext) return
-      }
-    }
-
-    each(obj, rel)
+    each((typeof obj == 'string') ? { link: obj } : obj, rel)
   })
 }
 
 exports.link =
-exports.asLink = function (obj, requiredAttr) {
-  if (!obj || !isObject(obj))
+exports.asLink = function (obj, type) {
+  if (!obj)
     return null
-  return isLink(obj, requiredAttr) ? obj : null
+  if (isString(obj))
+    obj = { link: obj }
+  return isLink(obj, type) ? obj : null
 }
 
 exports.links =
-exports.asLinks = function (obj, requiredAttr) {
-  if (!obj || !isObject(obj))
+exports.asLinks = function (obj, type) {
+  if (!obj)
     return []
   var arr = Array.isArray(obj) ? obj : [obj]
-  return arr.filter(function (l) { return isLink(l, requiredAttr) })
+  return arr
+    .filter(function (l) { return isLink(l, type) })
+    .map(function (o) { return (typeof o == 'string') ? { link: o } : o })
 }
 
 var isLink =
-exports.isLink = function (obj, requiredAttr) {
-  if (requiredAttr)
-    return isRef(obj[requiredAttr])
-  if (obj.msg)
-    return isHash(obj.msg)
-  if (obj.feed)
-    return isFeedId(obj.feed)
-  if (obj.ext)
-    return isHash(obj.ext)
-  return false
+exports.isLink = function (obj, type) {
+  if (!obj)
+    return false
+  var r = (isString(obj)) ? obj : obj.link
+  return (type) ? (ref.type(r) == type) : ref.isLink(r)
 }
