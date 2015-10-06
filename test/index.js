@@ -24,7 +24,8 @@ module.exports = function () {
       // none of these will be indexed
       j: feedid,
       k: { link: feedid }
-    }
+    },
+    j: { 0: feedid, 1: msgid, 2: blobid } // array-like object, treated like an array
   }
 
   tape('link', function (t) {
@@ -94,6 +95,7 @@ module.exports = function () {
     t.deepEqual(mlib.links(msg.h, 'feed'), [{ link: feedid, foo: true }])
     t.deepEqual(mlib.links(msg.h, 'msg'), [{ link: msgid, foo: true }])
     t.deepEqual(mlib.links(msg.h, 'blob'), [{ link: blobid, foo: true }])
+    t.deepEqual(mlib.links(msg.j), [{ link: feedid }, { link: msgid }, { link: blobid }])
 
     t.end()
 
@@ -121,7 +123,10 @@ module.exports = function () {
       { link: blobid },
       { link: feedid, foo: true },
       { link: msgid, foo: true },
-      { link: blobid, foo: true }
+      { link: blobid, foo: true },
+      { link: feedid },
+      { link: msgid },
+      { link: blobid }
     ])
     t.deepEqual(index('a'), [{ link: feedid }])
     t.deepEqual(index({ rel: 'a' }), [{ link: feedid }])
@@ -131,19 +136,22 @@ module.exports = function () {
       { link: feedid },
       { link: feedid, foo: true },
       { link: feedid },
-      { link: feedid, foo: true }
+      { link: feedid, foo: true },
+      { link: feedid }
     ])
     t.deepEqual(index({ msg: true }), [
       { link: msgid },
       { link: msgid, foo: true },
       { link: msgid },
-      { link: msgid, foo: true }
+      { link: msgid, foo: true },
+      { link: msgid }
     ])
     t.deepEqual(index({ blob: true }), [
       { link: blobid },
       { link: blobid, foo: true },
       { link: blobid },
-      { link: blobid, foo: true }
+      { link: blobid, foo: true },
+      { link: blobid }
     ])
 
     t.end()

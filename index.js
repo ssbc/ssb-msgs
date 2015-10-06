@@ -4,12 +4,37 @@ function isObject (o) { return o && 'object' === typeof o }
 function isBool (o) { return 'boolean' === typeof o }
 function isString (s) { return 'string' === typeof s }
 
+function toArray (v, force) {
+  if (Array.isArray(v))
+    return v
+
+  // maybe it's an array-like object? (object with ordered numeric keys)
+  var i=0, arr=[]
+  if (isObject(v)) {
+    while (v[i]) {
+      arr[i] = v[i]
+      i++
+    }
+    if (Object.keys(arr).length > 0)
+      return arr // it was!
+  }
+
+  // it wasnt...
+  if (force) {
+    // ...just put v in the arr
+    arr.push(v)
+    return arr
+  }
+  return v
+}
+
 function traverse (obj, each) {
   for (var k in obj) {
     if (!obj[k])
       continue
-    if (Array.isArray(obj[k])) {
-      obj[k].forEach(function (v) {
+    var arr = toArray(obj[k], false)
+    if (Array.isArray(arr)) {
+      arr.forEach(function (v) {
         each(v, k)
       })
     } else
@@ -71,7 +96,7 @@ exports.links =
 exports.asLinks = function (obj, type) {
   if (!obj)
     return []
-  var arr = Array.isArray(obj) ? obj : [obj]
+  var arr = toArray(obj, true)
   return arr
     .filter(function (l) { return isLink(l, type) })
     .map(function (o) { return (typeof o == 'string') ? { link: o } : o })
