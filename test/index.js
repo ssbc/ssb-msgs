@@ -5,6 +5,7 @@ var mlib = require('../index')
 module.exports = function () {
   var feedid = '@nUtgCIpqOsv6k5mnWKA4JeJVkJTd9Oz2gmv6rojQeXU=.ed25519'
   var msgid = '%MPB9vxHO0pvi2ve2wh6Do05ZrV7P6ZjUQ+IEYnzLfTs=.sha256'
+  var msgid2 = '%NPB9vxHO0pvi2ve2wh6Do05ZrV7P6ZjUQ+IEYnzLfTs=.sha256'
   var blobid = '&Pe5kTo/V/w4MToasp1IuyMrMcCkQwDOdyzbyD5fy4ac=.sha256'
 
   var msg = {
@@ -156,6 +157,48 @@ module.exports = function () {
 
     t.end()
 
+  })
+
+  tape('linksTo, relationsTo', function (t) {
+    var msg1 = {
+      key: msgid,
+      value: {
+        content: {
+          type: 'foo',
+          rel1: msgid2,
+          rel2: [msgid2],
+          rel3: { link: msgid2 },
+          rel4: [{ link: msgid2 }]
+        }
+      }
+    }
+    var msg2 = {
+      key: msgid2,
+      value: {
+        content: {
+          type: 'foo',
+          rel5: msgid,
+          rel6: [msgid],
+          rel7: { link: msgid },
+          rel8: [{ link: msgid }]
+        }
+      }
+    }
+    t.deepEqual(mlib.linksTo(msg1, msg2), [
+      { link: msgid2 },
+      { link: msgid2 },
+      { link: msgid2 },
+      { link: msgid2 }
+    ])
+    t.deepEqual(mlib.relationsTo(msg1, msg2), ['rel1', 'rel2', 'rel3', 'rel4'])
+    t.deepEqual(mlib.linksTo(msg2, msg1), [
+      { link: msgid },
+      { link: msgid },
+      { link: msgid },
+      { link: msgid }
+    ])
+    t.deepEqual(mlib.relationsTo(msg2, msg1), ['rel5', 'rel6', 'rel7', 'rel8'])
+    t.end()
   })
 }
 
