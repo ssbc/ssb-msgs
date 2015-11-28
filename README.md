@@ -96,3 +96,27 @@ mlib.isLink(msg.bar, 'feed') // => true
 mlib.isLink(msg.bar, 'msg') // => false
 mlib.isLink(msg.baz) // => false
 ```
+
+### linksTo
+
+```
+linksTo(a: Message, b: Message)
+```
+
+Get link objects pointing from `a` to `b`.
+
+```js
+mlib.linksTo(msgA, msgB) // => [{ link: '%msgB-id' }]
+```
+
+### relationsTo
+
+```
+relationsTo(a: Message, b: Message)
+```
+
+Get relations of links pointing from `a` to `b`.
+
+```js
+mlib.relationsTo(msgA, msgB) // => ['fooRelation']
+```
