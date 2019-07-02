@@ -75,7 +75,7 @@ exports.indexLinks = function (message, opts, each) {
     var r;
     if (typeof obj == 'string') {
       r = obj
-    } else if (typeof obj.link == 'string') {
+    } else if (obj && typeof obj.link == 'string') {
       r = obj.link
     } else {
       return
